@@ -1,6 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: "com.diffplug.gradle.spotless"
+apply plugin: 'com.github.dcendents.android-maven'
+
+group ='com.github.wotosts'
 
 ext {
     bintrayRepo = 'maven'
