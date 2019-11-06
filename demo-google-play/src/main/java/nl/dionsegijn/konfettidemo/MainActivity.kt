@@ -3,6 +3,8 @@ package nl.dionsegijn.konfettidemo
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.BottomSheetBehavior
@@ -18,7 +20,6 @@ import nl.dionsegijn.konfettidemo.configurations.settings.Configuration
 import nl.dionsegijn.konfettidemo.configurations.settings.ConfigurationManager
 import nl.dionsegijn.konfettidemo.interfaces.OnConfigurationChangedListener
 import nl.dionsegijn.konfettidemo.interfaces.OnSimpleTabSelectedListener
-
 
 class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
 
@@ -59,11 +60,12 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                val state: Int = if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                    BottomSheetBehavior.STATE_EXPANDED
-                } else {
-                    BottomSheetBehavior.STATE_COLLAPSED
-                }
+                val state: Int =
+                    if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                        BottomSheetBehavior.STATE_EXPANDED
+                    } else {
+                        BottomSheetBehavior.STATE_COLLAPSED
+                    }
                 bottomSheetBehavior.state = state
             }
         })
@@ -76,6 +78,43 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
             Configuration.TYPE_STREAM_FROM_TOP -> streamFromTop(config, selectedColors)
             Configuration.TYPE_BURST_FROM_CENTER -> burstFromCenter(config, selectedColors)
         }
+
+        config.shapes = arrayOf(
+            Shape.RECT, Shape.CIRCLE,
+            Shape.BITMAP(
+                BitmapFactory.decodeResource(resources, R.drawable.ic_pigtail),
+                listOf(
+                    Color.parseColor("#272121"),
+                    Color.parseColor("#443737"),
+                    Color.parseColor("#ff4d00"),
+                    Color.parseColor("#ff0000")
+                ),
+                1f,
+                0.2f
+            ),
+            Shape.BITMAP(
+                BitmapFactory.decodeResource(resources, R.drawable.ic_circle_stripe),
+                listOf(
+                    Color.parseColor("#272121"),
+                    Color.parseColor("#443737"),
+                    Color.parseColor("#ff4d00"),
+                    Color.parseColor("#ff0000")
+                ),
+                1f,
+                0.2f
+            ),
+            Shape.BITMAP(
+                BitmapFactory.decodeResource(resources, R.drawable.ic_circle_border),
+                listOf(
+                    Color.parseColor("#272121"),
+                    Color.parseColor("#443737"),
+                    Color.parseColor("#ff4d00"),
+                    Color.parseColor("#ff0000")
+                ),
+                1f,
+                0.2f
+            )
+        )
     }
 
     private fun streamFromTop(config: Configuration, colors: IntArray) {
@@ -102,7 +141,10 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
             .setTimeToLive(config.timeToLive)
             .addShapes(*config.shapes)
             .addSizes(Size(12), Size(16, 6f))
-            .setPosition(viewKonfetti.x + viewKonfetti.width / 2, viewKonfetti.y + viewKonfetti.height / 3)
+            .setPosition(
+                viewKonfetti.x + viewKonfetti.width / 2,
+                viewKonfetti.y + viewKonfetti.height / 3
+            )
             .burst(100)
     }
 
@@ -112,7 +154,8 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
     private var degrees: Double = 0.0
     private fun velocityTest() {
         viewKonfetti.setOnTouchListener { _, event ->
-            val modeEnabled = viewConfigurationControls.configuration.active.type == Configuration.TYPE_DRAG_AND_SHOOT
+            val modeEnabled =
+                viewConfigurationControls.configuration.active.type == Configuration.TYPE_DRAG_AND_SHOOT
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     startX = event.x
@@ -130,17 +173,19 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
                 }
                 MotionEvent.ACTION_UP -> {
                     if (!modeEnabled || !canIHaveMoreConfetti()) return@setOnTouchListener false
-                    val colors = viewConfigurationControls.configuration.active.colors.map { color(it) }.toIntArray()
+                    val colors =
+                        viewConfigurationControls.configuration.active.colors.map { color(it) }
+                            .toIntArray()
                     viewKonfetti.build()
-                            .addColors(*colors)
-                            .setDirection(degrees - 50, degrees + 50)
-                            .setSpeed(0f, speed + 5f)
-                            .addShapes(Shape.RECT, Shape.CIRCLE)
-                            .addSizes(Size(12), Size(16, 6f))
-                            .setPosition(startX, startY)
-                            .setTimeToLive(10000)
-                            .setFadeOutEnabled(true)
-                            .burst(200)
+                        .addColors(*colors)
+                        .setDirection(degrees - 50, degrees + 50)
+                        .setSpeed(0f, speed + 5f)
+                        .addShapes(Shape.RECT, Shape.CIRCLE)
+                        .addSizes(Size(12), Size(16, 6f))
+                        .setPosition(startX, startY)
+                        .setTimeToLive(10000)
+                        .setFadeOutEnabled(true)
+                        .burst(200)
                 }
             }
             return@setOnTouchListener modeEnabled
@@ -160,7 +205,12 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
         valueAnimator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 textViewInstructions.setText(selected.instructions)
-                viewIllustration.setImageDrawable(ContextCompat.getDrawable(applicationContext, selected.vector))
+                viewIllustration.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        applicationContext,
+                        selected.vector
+                    )
+                )
                 textViewInstructions.animate().alpha(1f).duration = 300
                 viewIllustration.animate().alpha(1f).duration = 300
             }
@@ -171,7 +221,8 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
     private fun updateSystemsInfo() {
         val activeSystems = viewKonfetti.getActiveSystems()
         val activeParticles = activeSystems.sumBy { it.activeParticles() }
-        viewSystemInfo.text = "Active systems: ${activeSystems.size} \nActive particles: $activeParticles"
+        viewSystemInfo.text =
+            "Active systems: ${activeSystems.size} \nActive particles: $activeParticles"
     }
 
     /**
@@ -181,12 +232,12 @@ class MainActivity : AppCompatActivity(), OnConfigurationChangedListener {
      */
     private fun canIHaveMoreConfetti(): Boolean {
         if (viewConfigurationControls.configuration.maxParticleSystemsAlive
-                == ConfigurationManager.PARTICLE_SYSTEMS_INFINITE) {
+            == ConfigurationManager.PARTICLE_SYSTEMS_INFINITE
+        ) {
             return true
         } else if (viewKonfetti.getActiveSystems().size <= 6) {
             return true
         }
         return false
     }
-
 }

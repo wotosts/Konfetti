@@ -20,14 +20,14 @@ class RenderSystem(
     private val location: LocationModule,
     private val velocity: VelocityModule,
     private val sizes: Array<Size>,
-    private val shapes: Array<Shape>,
+    private val shapes: List<Shape>,
     private val colors: IntArray,
     private val config: ConfettiConfig,
     private val emitter: Emitter
 ) {
 
     private val random = Random()
-    private var gravity = Vector(0f, 0.01f)
+    private var gravity = Vector(0f, 0.005f)
     private val particles: MutableList<Confetti> = mutableListOf()
 
     init {
